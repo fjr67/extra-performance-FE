@@ -1,0 +1,66 @@
+name: Deploy frontend to Azure Storage Static Website
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (production)
+        run: npm run build -- --configuration production
+
+      - name: Setup Azure CLI
+        uses: azure/CLI@v2
+        with:
+          inlineScript: |
+            az version
+
+      # Optional but recommended: clear old hashed bundles so $web stays clean
+      - name: Clear $web container
+        uses: azure/CLI@v2
+        env:
+          AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+        with:
+          inlineScript: |
+            az storage blob delete-batch \
+              --connection-string "$AZURE_STORAGE_CONNECTION_STRING" \
+              --source '$web'
+
+      - name: Upload dist to $web
+        uses: azure/CLI@v2
+        env:
+          AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+        with:
+          inlineScript: |
+            DIST_DIR="dist/extra-performance-FE"
+
+            if [ ! -d "$DIST_DIR" ]; then
+              echo "Build output folder not found: $DIST_DIR"
+              echo "Contents of dist/:"
+              ls -la dist || true
+              exit 1
+            fi
+
+            echo "Deploying from: $DIST_DIR"
+
+            az storage blob upload-batch \
+              --connection-string "$AZURE_STORAGE_CONNECTION_STRING" \
+              --destination '$web' \
+              --source "$DIST_DIR" \
+              --overwrite true
