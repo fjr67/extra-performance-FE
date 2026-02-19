@@ -29,7 +29,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: angular-dist
-          path: dist/extra-performance-FE
+          path: dist/extra-performance-FE/browser
           if-no-files-found: error
 
   deploy:
@@ -41,7 +41,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: angular-dist
-          path: dist/extra-performance-FE
+          path: dist/extra-performance-FE/browser
 
       - name: Setup Azure CLI
         uses: azure/CLI@v2
@@ -65,12 +65,14 @@ jobs:
           AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
         with:
           inlineScript: |
-            DIST_DIR="dist/extra-performance-FE"
+            DIST_DIR="dist/extra-performance-FE/browser"
 
             if [ ! -d "$DIST_DIR" ]; then
               echo "Build output folder not found: $DIST_DIR"
               echo "Contents of dist/:"
               ls -la dist || true
+              echo "Contents of dist/extra-performance-FE:"
+              ls -la dist/extra-performance-FE || true
               exit 1
             fi
 
