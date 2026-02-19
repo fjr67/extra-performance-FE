@@ -10,5 +10,5 @@ import { environment } from '../environments/environment';
 })
 export class App {
   private baseUrl = environment.apiUrl;
-  protected readonly title = signal('extra-performance-FE');
+  protected readonly title = signal('actions works');
 }
