@@ -2,7 +2,7 @@ name: Deploy frontend to Azure Storage Static Website
 
 on:
   push:
-    branches: ["main"]
+    branches: ["master"]
   workflow_dispatch:
 
 jobs:
