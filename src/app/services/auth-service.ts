@@ -14,6 +14,7 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   private baseUrl = environment.apiUrl;
+  token: any;
 
   login(username: string, password: string) {
     const bauth = btoa(`${username}:${password}`)
@@ -21,9 +22,27 @@ export class AuthService {
       Authorization: `Basic ${bauth}`
     });
 
-    return this.http.get<LoginResponse>(`${this.baseUrl}/login`, { headers }).pipe(
-      tap((response: any) => sessionStorage['JWT']=response.token),
+    return this.http.post<LoginResponse>(`${this.baseUrl}/login`, null, { headers }).pipe(
+      tap((response: any) => sessionStorage.setItem('JWT', response.token)),
       map(() => true)
     )
+  }
+
+  getToken(): string | null {
+    return sessionStorage.getItem('JWT');
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.getToken();
+  }
+
+  logout(){
+    return this.http.post<any>(`${this.baseUrl}/logout`, null).pipe(
+      tap(() => this.clearToken())
+    );
+  }
+
+  clearToken(){
+    sessionStorage.removeItem('JWT');
   }
 }

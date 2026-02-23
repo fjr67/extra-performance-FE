@@ -10,7 +10,12 @@ export class WebService {
 
   private baseUrl = environment.apiUrl;
 
-  getAllEvents(){
-    return this.http.get<any>(`${this.baseUrl}/events`);
+  getEvents(from: Date, to: Date){
+    return this.http.get<any[]>(`${this.baseUrl}/userEvents`, {
+      params: {
+        from: from.toISOString(),
+        to: to.toISOString()
+      }
+    });
   }
 }
