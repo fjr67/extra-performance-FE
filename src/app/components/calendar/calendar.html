@@ -1,137 +1,96 @@
+<!-- container for entire page -->
 <div class="container py-3">
-  <!-- Header: week navigation -->
-  <div class="d-flex align-items-center justify-content-between mb-3">
-    <button
-      class="btn btn-outline-secondary"
-      type="button"
-      (click)="prevWeek()"
-      [disabled]="loading"
-    >
-      ‹ Prev
-    </button>
+    <div class="d-flex align-items-center justify-content-center mb-3">
 
-    <div class="text-center">
-      <div class="h5 m-0">Weekly Calendar</div>
-      <div class="text-muted">
-        {{ weekStart | date:'dd MMM yyyy' }} – {{ weekEnd | date:'dd MMM yyyy' }}
-      </div>
+        <!-- date of start and end of week displayed + buttons for navigating to next and previous weeks -->
+        <div class="d-flex justify-content-center py-4">
+            <div class="text-center">
+
+                <div class="d-flex align-items-center justify-content-center gap-3">
+                    <button class="btn btn-outline-secondary" type="button" (click)="prevWeek()" [disabled]="loading">
+                        <
+                    </button>
+
+                    <span>
+                        <h5>{{ weekStart | date:'dd MMM yyyy' }} - {{ weekEnd | date:'dd MMM yyyy' }}</h5>
+                    </span>
+
+                    <button class="btn btn-outline-secondary" type="button" (click)="nextWeek()" [disabled]="loading">
+                        >
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <button
-      class="btn btn-outline-secondary"
-      type="button"
-      (click)="nextWeek()"
-      [disabled]="loading"
-    >
-      Next ›
-    </button>
-  </div>
-
-  <!-- Loading / error -->
+  <!-- loading message shows until events have been returned by API -->
   @if (loading) {
     <div class="alert alert-info">Loading events...</div>
   }
 
+  <!-- alert shows if error occurs -->
   @if (!loading && error) {
     <div class="alert alert-danger">{{ error }}</div>
   }
 
-  <!-- Weekly grid -->
+  <!-- if events have been retrieved successfully, calendar grid shows -->
   @if (!loading && !error) {
     <div class="border rounded overflow-hidden bg-white">
-      <!-- Header row -->
-      <div
-        class="d-grid"
-        style="
-          grid-template-columns: 80px repeat(7, 1fr);
-          border-bottom: 1px solid #dee2e6;
-          position: sticky;
-          top: 0;
-          z-index: 5;
-        "
-      >
-        <div
-          class="bg-light"
-          style="height: 52px; border-right: 1px solid #dee2e6"
-        ></div>
+        <div #calendarScroll style="max-height: 70vh; overflow-y: auto; overflow-x: hidden">
+            <div class="d-grid bg-light" style="grid-template-columns: 80px repeat(7, 1fr); border-bottom: 1px solid #dee2e6; position: sticky; top: 0; z-index: 5;">
+                <div class="bg-light" style="height: 52px; border-right: 1px solid #dee2e6"></div>
 
-        @for (day of weekDays; track day.date.toISOString()) {
-          <div
-            class="bg-light d-flex flex-column justify-content-center px-2"
-            style="height: 52px; border-right: 1px solid #dee2e6"
-          >
-            <div class="fw-semibold">{{ day.date | date:'EEE' }}</div>
-            <div class="text-muted small">{{ day.date | date:'dd MMM' }}</div>
-          </div>
-        }
-      </div>
-
-      <!-- Scrollable body -->
-      <div
-        #calendarScroll
-        style="max-height: 70vh; overflow-y: auto; overflow-x: hidden"
-      >
-        <div class="d-grid" style="grid-template-columns: 80px repeat(7, 1fr)">
-          <!-- Time column -->
-          <div style="border-right: 1px solid #dee2e6">
-            @for (h of hours; track h) {
-              <div
-                class="d-flex align-items-start justify-content-end pe-2 text-muted small"
-                style="height: 60px; border-bottom: 1px solid #f1f3f5"
-              >
-                {{ (h < 10 ? '0' + h : h) }}:00
-              </div>
-            }
-          </div>
-
-          <!-- Day columns -->
-          @for (day of weekDays; track day.date.toISOString()) {
-            <div style="position: relative; border-right: 1px solid #dee2e6">
-              <!-- Hour grid background -->
-              @for (h of hours; track h) {
-                <div style="height: 60px; border-bottom: 1px solid #f1f3f5"></div>
-              }
-
-              <!-- Current time red line -->
-              @if (isSameLocalDate(day.date, now)) {
-                <div
-                  style="
-                    position: absolute;
-                    left: 0;
-                    right: 0;
-                    height: 2px;
-                    background: red;
-                    z-index: 4;
-                  "
-                  [style.top.px]="nowMinutes"
-                ></div>
-              }
-
-              <!-- Events -->
-              @for (ev of day.events; track ev._id) {
-                <div
-                  class="rounded shadow-sm border px-2 py-1"
-                  style="
-                    position: absolute;
-                    left: 6px;
-                    right: 6px;
-                    background: #9dc1f4;
-                    overflow: hidden;
-                  "
-                  [style.top.px]="eventTop(ev)"
-                  [style.height.px]="eventHeight(ev)"
-                >
-                  <div class="fw-semibold small text-truncate">{{ ev.title }}</div>
-
-                  <div class="text-muted" style="font-size: 12px">
-                    {{ ev.start | date:'HH:mm' }} – {{ ev.end | date:'HH:mm' }}
-                  </div>
+                @for (day of weekDays; track day.date.toISOString()) {
+                <div class="bg-light d-flex flex-column justify-content-center px-2" style="height: 52px; border-right: 1px solid #dee2e6">
+                    <div class="fw-semibold">
+                        {{ day.date | date:'EEE' }}
+                    </div>
+                    <div class="text-muted small">
+                        {{ day.date | date:'dd MMM' }}
+                    </div>
                 </div>
-              }
+                }
             </div>
-          }
+
+            <!-- scrollable body -->
+            <div class="d-grid" style="grid-template-columns: 80px repeat(7, 1fr)">
+                <!-- time column -->
+                <div style="border-right: 1px solid #dee2e6">
+                    @for (h of hours; track h) {
+                        <div class="d-flex align-items-start justify-content-end pe-2 text-muted small" style="height: 60px; border-bottom: 1px solid #f1f3f5">
+                            {{ (h < 10 ? '0' + h : h) }}:00
+                        </div>
+                    }
+                </div>
+
+                <!-- day columns -->
+                @for (day of weekDays; track day.date.toISOString()) {
+                    <div style="position: relative; border-right: 1px solid #dee2e6">
+
+                    <!-- hour grid background -->
+                    @for (h of hours; track h) {
+                        <div style="height: 60px; border-bottom: 1px solid #f1f3f5"></div>
+                    }
+
+                    <!-- red line to indicate current time, only shows if the week displayed contains today's date -->
+                    @if (isSameLocalDate(day.date, now)) {
+                        <div style="position: absolute; left: 0; right: 0; height: 2px; background: red; z-index: 4;" [style.top.px]="nowMinutes"></div>
+                    }
+
+                    <!-- events -->
+                    @for (ev of day.events; track ev._id) {
+                        <div class="rounded shadow-sm border px-2 py-1" style="position: absolute; left: 6px; right: 6px; background: #9dc1f4; overflow: hidden;" [style.top.px]="eventTop(ev)" [style.height.px]="eventHeight(ev)">
+                            <div class="fw-semibold small text-truncate">{{ ev.title }}</div>
+
+                            <div class="text-muted" style="font-size: 12px">
+                                {{ ev.start | date:'HH:mm' }} – {{ ev.end | date:'HH:mm' }}
+                            </div>
+                        </div>
+                    }
+                    </div>
+                }
+            </div>
         </div>
-      </div>
     </div>
   }
 </div>
