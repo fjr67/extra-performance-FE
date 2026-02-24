@@ -28,6 +28,10 @@ export class AuthService {
     )
   }
 
+  register(user: any){
+    return this.http.post<any>(`${this.baseUrl}/register`, user);
+  }
+
   getToken(): string | null {
     return sessionStorage.getItem('JWT');
   }

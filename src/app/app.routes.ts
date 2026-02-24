@@ -10,8 +10,15 @@ export const routes: Routes = [
             import('./components/login/login').then(m => m.Login)
     },
     {
+        path: 'register',
+        loadComponent: () =>
+            import('./components/register/register').then(m => m.Register)
+    },
+    {
         path: '',
         canActivate: [authGuard],
+        loadComponent: () =>
+            import('./components/layout/layout').then(m => m.Layout),
         children: [
             {
                 path: 'calendar',

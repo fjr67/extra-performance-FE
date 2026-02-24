@@ -41,6 +41,6 @@ export class Login implements OnInit {
   }
 
   registerClick(){
-
+    this.router.navigate(['register']);
   }
 }

@@ -3,6 +3,7 @@ import { WebService } from '../../services/web-service';
 import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs';
 
+// format of calendar event object returned from API
 type CalendarEvent = {
   _id: string;
   userId: string;
@@ -15,6 +16,7 @@ type CalendarEvent = {
   workoutLogId?: string;
 }
 
+// format of a day of the week, contains the date and events for that day
 type WeekDay = {
   date: Date;
   events: CalendarEvent[];
