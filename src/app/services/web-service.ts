@@ -26,4 +26,12 @@ export class WebService {
   deleteEvent(id: any) {
     return this.http.delete<any>(`${this.baseUrl}/deleteEvent/${id}`)
   }
+
+  editEvent(id: any, event: any){
+    return this.http.patch<any>(`${this.baseUrl}/editEvent/${id}`, event);
+  }
+
+  getOneEvent(id: any){
+    return this.http.get<any>(`${this.baseUrl}/userEvents/${id}`);
+  }
 }

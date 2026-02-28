@@ -372,4 +372,8 @@ export class Calendar implements OnInit, OnDestroy{
       }
     })
   }
+
+  editEventClick(){
+    this.router.navigate([`/calendar/editEvent/${this.selectedEvent?._id}`]);
+  }
 }

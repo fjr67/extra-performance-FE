@@ -77,9 +77,11 @@
                         <div class="mt-2"><span class="fw-semibold">Description:</span> {{ selectedEvent.description }}</div>
                     }
 
-                    <div class="text-center">
-                        <br>
-                        <button class="btn btn-danger btn-sm" type="button" (click)="deleteEvent()">Delete</button>
+                    <br>
+
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-sm w-25" style="background-color: #001f3f; color: rgb(255, 255, 255);" type="button" (click)="editEventClick()"><b>Edit</b></button>
+                        <button class="btn btn-danger btn-sm w-25" type="button" (click)="deleteEvent()">Delete</button>
                     </div>
                 </div>
             }
@@ -129,8 +131,8 @@
 
     <br>
 
-    <div class="d-flex justify-content-end">
-        <button class="btn btn-light rounded-pill btn-outline-secondary" type="button" (click)="createEventClick()">Add Event+</button>
+    <div class="d-flex justify-content-end text-white">
+        <button class="btn btn-light rounded-pill btn-outline-secondary" style="background-color: #001f3f; color: rgb(255, 255, 255);" type="button" (click)="createEventClick()"><b>Add Event+</b></button>
     </div>
   }
 </div>
