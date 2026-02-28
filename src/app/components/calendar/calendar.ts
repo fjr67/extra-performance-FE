@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 import { WebService } from '../../services/web-service';
 import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 // format of calendar event object returned from API
 type CalendarEvent = {
@@ -31,7 +31,7 @@ type WeekDay = {
 @Component({
   selector: 'app-calendar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   providers: [WebService],
   templateUrl: './calendar.html',
   styleUrl: './calendar.css',
@@ -77,6 +77,13 @@ export class Calendar implements OnInit, OnDestroy{
 
   // used to the position of the 'now line' in pixels
   nowPosition = 0;
+
+  // stores the selected event to show extra info
+  selectedEvent: CalendarEvent | null = null;
+
+  selectedAnchor: HTMLElement | null = null;
+
+  detailsStyle: { top: number; left: number } | null = null;
 
   // used to show loading screen until events have been retrieved
   loading = false;
@@ -321,5 +328,33 @@ export class Calendar implements OnInit, OnDestroy{
 
     flushGroup();
     return events;
+  }
+
+  checkEventDuration(event: CalendarEvent): number {
+    return (event.end.getTime() - event.start.getTime()) / 60000;
+  }
+
+  openEventDetails(event: CalendarEvent, domEvent: MouseEvent) {
+    // event that has been clicked
+    const target = domEvent.currentTarget as HTMLElement;
+
+    // 
+    const scroll = this.calendarScroll?.nativeElement;
+    if (!scroll) return;
+
+    // gets position of event and calendar container within browser window
+    const eventPos = target.getBoundingClientRect();
+    const scrollPos = scroll.getBoundingClientRect();
+
+    const top = (eventPos.top - scrollPos.top) + scroll.scrollTop;
+    const left = (eventPos.left - scrollPos.left) + scroll.scrollLeft;
+    const gap = 12;
+    const cardWidth = 260;
+
+    const maxLeft = scroll.clientWidth - cardWidth - 8;
+    const clampedLeft = Math.min(Math.max(left + target.offsetWidth + gap, 8), maxLeft);
+
+    this.selectedEvent = event;
+    this.detailsStyle = { top, left: clampedLeft };
   }
 }

@@ -38,12 +38,12 @@
   @if (!loading && !error) {
     <div class="border rounded overflow-hidden bg-white">
         <!-- '#calendarScroll' is reference used for auto scroll to current time -->
-        <div #calendarScroll style="max-height: 70vh; overflow-y: auto; overflow-x: hidden">
-            <div class="d-grid bg-light" style="grid-template-columns: 80px repeat(7, 1fr); border-bottom: 1px solid #dee2e6; position: sticky; top: 0; z-index: 5;">
-                <div class="bg-light" style="height: 52px; border-right: 1px solid #dee2e6"></div>
+        <div #calendarScroll style="position: relative; max-height: 70vh; overflow-y: auto; overflow-x: hidden">
+            <div class="d-grid bg-light" style="grid-template-columns: 80px repeat(7, 1fr); border-bottom: 1px solid #adadad; position: sticky; top: 0; z-index: 5;">
+                <div class="bg-light" style="height: 52px; border-right: 1px solid #adadad"></div>
 
                 @for (day of weekDays; track day.date.toISOString()) {
-                <div class="bg-light d-flex flex-column justify-content-center px-2" style="height: 52px; border-right: 1px solid #dee2e6">
+                <div class="bg-light d-flex flex-column justify-content-center px-2" style="height: 52px; border-right: 1px solid #adadad">
                     <div class="fw-semibold">
                         {{ day.date | date:'EEE' }}
                     </div>
@@ -54,12 +54,37 @@
                 }
             </div>
 
+            @if (selectedEvent && detailsStyle) {
+                <div class="event-details-card shadow border rounded bg-white p-2" style="position: absolute; width: 260px; z-index: 10;" [style.top.px]="detailsStyle.top" [style.left.px]="detailsStyle.left">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="fw-bold">{{ selectedEvent.title }}</div>
+                        <button class="btn-close" type="button" (click)="selectedEvent=null; detailsStyle=null"></button>
+                    </div>
+
+                    <div class="fw-semibold">
+                        {{ selectedEvent.start | date:'EE dd/MM/yyyy'}}
+                    </div>
+
+                    <div class="text-muted small">
+                        {{ selectedEvent.start | date:'HH:mm' }} - {{ selectedEvent.end | date:'HH:mm' }}
+                    </div>
+
+                    @if (selectedEvent.location) {
+                        <div class="mt-2"><span class="fw-semibold">Location:</span> {{ selectedEvent.location }}</div>
+                    }
+
+                    @if (selectedEvent.description) {
+                        <div class="mt-2"><span class="fw-semibold">Description:</span> {{ selectedEvent.description }}</div>
+                    }
+                </div>
+            }
+
             <!-- scrollable body -->
             <div class="d-grid" style="grid-template-columns: 80px repeat(7, 1fr)">
                 <!-- time column -->
-                <div style="border-right: 1px solid #dee2e6">
+                <div style="border-right: 1px solid #adadad">
                     @for (h of hours; track h) {
-                        <div class="d-flex align-items-start justify-content-end pe-2 text-muted small" style="border-bottom: 1px solid #f1f3f5" [style.height.px]="hourHeight">
+                        <div class="d-flex align-items-start justify-content-end pe-2 text-muted small" style="border-bottom: 1px solid #adadad" [style.height.px]="hourHeight">
                             {{ (h < 10 ? '0' + h : h) }}:00
                         </div>
                     }
@@ -67,11 +92,11 @@
 
                 <!-- day columns -->
                 @for (day of weekDays; track day.date.toISOString()) {
-                    <div style="position: relative; border-right: 1px solid #dee2e6">
+                    <div style="position: relative; border-right: 1px solid #adadad">
 
                     <!-- hour grid background -->
                     @for (h of hours; track h) {
-                        <div style="border-bottom: 1px solid #f1f3f5" [style.height.px]="hourHeight"></div>
+                        <div style="border-bottom: 1px solid #adadad" [style.height.px]="hourHeight"></div>
                     }
 
                     <!-- red line to indicate current time, only shows if the week displayed contains today's date -->
@@ -81,12 +106,14 @@
 
                     <!-- events -->
                     @for (event of day.events; track event._id) {
-                        <div class="rounded shadow-sm border px-2 py-1" style="position: absolute; background: #9dc1f4; overflow: hidden;" [style.top.px]="eventTop(event)" [style.height.px]="eventHeight(event)" [style.left.%]="eventLeftPercent(event)" [style.width.%]="eventWidthPercent(event)">
+                        <div class="rounded shadow-sm border px-2 py-1" style="position: absolute; background: #9dc1f4; overflow: hidden; cursor: pointer;" (click)="openEventDetails(event, $event)" [style.top.px]="eventTop(event)" [style.height.px]="eventHeight(event)" [style.left.%]="eventLeftPercent(event)" [style.width.%]="eventWidthPercent(event)">
                             <div class="fw-semibold small text-truncate">{{ event.title }}</div>
 
-                            <div class="text-muted" style="font-size: 12px">
-                                {{ event.start | date:'HH:mm' }} – {{ event.end | date:'HH:mm' }}
-                            </div>
+                            @if (checkEventDuration(event) > 45){
+                                <div class="text-muted" style="font-size: 12px">
+                                    {{ event.start | date:'HH:mm' }} - {{ event.end | date:'HH:mm' }}
+                                </div>
+                            }
                         </div>
                     }
                     </div>

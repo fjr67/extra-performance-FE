@@ -1,11 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { WebService } from '../../services/web-service';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors, FormGroup } from '@angular/forms';
 import { AuthService } from '../../services/auth-service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { describe } from 'node:test';
 
-const objectIdRegex = /^[a-fA-F0-9]{24}$/;
 
 function dateTimeToISO(strDate: string, strHour: string, strMinute: string): string {
   const [year, month, day] = strDate.split('-').map(Number);
@@ -31,6 +29,26 @@ function checkEndAfterStart(fields: AbstractControl): ValidationErrors | null {
   const endDate = new Date(end.replace('+00:00', 'Z'));
 
   return endDate > startDate ? null : { endNotAfterStart: true }
+}
+
+function checkEventDuration(fields: AbstractControl): ValidationErrors | null {
+  const date = fields.get('date')?.value;
+  const startH = fields.get('startHour')?.value;
+  const startM = fields.get('startMinute')?.value;
+  const endH = fields.get('endHour')?.value;
+  const endM = fields.get('endMinute')?.value;
+
+  if (!date || startH == null || startM == null || endH == null || endM == null) {
+    return null;
+  }
+
+  const start = dateTimeToISO(date, startH, startM);
+  const end = dateTimeToISO(date, endH, endM);
+
+  const startDate = new Date(start.replace('+00:00', 'Z'));
+  const endDate = new Date(end.replace('+00:00', 'Z'));
+
+  return (((endDate.getTime() - startDate.getTime()) / 60000) >= 15) ? null : { eventTooShort: true }
 }
 
 @Component({
@@ -66,7 +84,7 @@ export class CreateEvent {
         workoutLogId : ['']
       },
       {
-        validators: [checkEndAfterStart]
+        validators: [checkEndAfterStart, checkEventDuration]
       }
     );
   }

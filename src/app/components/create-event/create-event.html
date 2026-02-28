@@ -78,6 +78,10 @@
                     <div class="text-danger mb-3">End time must be after start time</div>
                 }
 
+                @if ((eventForm.get('endHour')?.touched || submitted) && eventForm.hasError('eventTooShort')) {
+                    <div class="text-danger mb-3">Event duration must be at least 15 minutes</div>
+                }
+
                 <div class="mb-3">
                     <label for="description"><b>Description:</b></label>
                     <input type="text" name="description" id="description" class="form-control" formControlName="description">
