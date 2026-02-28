@@ -76,6 +76,11 @@
                     @if (selectedEvent.description) {
                         <div class="mt-2"><span class="fw-semibold">Description:</span> {{ selectedEvent.description }}</div>
                     }
+
+                    <div class="text-center">
+                        <br>
+                        <button class="btn btn-danger btn-sm" type="button" (click)="deleteEvent()">Delete</button>
+                    </div>
                 </div>
             }
 

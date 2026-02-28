@@ -22,4 +22,8 @@ export class WebService {
   createEvent(event: any) {
     return this.http.post<any>(`${this.baseUrl}/createEvent`, event);
   }
+
+  deleteEvent(id: any) {
+    return this.http.delete<any>(`${this.baseUrl}/deleteEvent/${id}`)
+  }
 }

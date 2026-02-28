@@ -357,4 +357,19 @@ export class Calendar implements OnInit, OnDestroy{
     this.selectedEvent = event;
     this.detailsStyle = { top, left: clampedLeft };
   }
+
+  deleteEvent() {
+    this.webService.deleteEvent(this.selectedEvent?._id).subscribe({
+      next: () => {
+        this.selectedEvent = null;
+        this.detailsStyle = null;
+
+        this.loadWeek(this.weekStart);
+      },
+      error: (err) => {
+        console.error(err);
+        this.error = err?.error?.error;
+      }
+    })
+  }
 }
