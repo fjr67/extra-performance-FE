@@ -1,6 +1,6 @@
 <!-- container for entire page -->
 <br>
-<div class="container py-5">
+<div class="container-fluid py-5 px-1" style="max-width: 1800px;">
     <div class="d-flex align-items-center justify-content-center mb-3">
 
         <!-- date of start and end of week displayed + buttons for navigating to next and previous weeks -->
@@ -37,6 +37,7 @@
   <!-- if events have been retrieved successfully, calendar grid shows -->
   @if (!loading && !error) {
     <div class="border rounded overflow-hidden bg-white">
+        <!-- '#calendarScroll' is reference used for auto scroll to current time -->
         <div #calendarScroll style="max-height: 70vh; overflow-y: auto; overflow-x: hidden">
             <div class="d-grid bg-light" style="grid-template-columns: 80px repeat(7, 1fr); border-bottom: 1px solid #dee2e6; position: sticky; top: 0; z-index: 5;">
                 <div class="bg-light" style="height: 52px; border-right: 1px solid #dee2e6"></div>
@@ -58,7 +59,7 @@
                 <!-- time column -->
                 <div style="border-right: 1px solid #dee2e6">
                     @for (h of hours; track h) {
-                        <div class="d-flex align-items-start justify-content-end pe-2 text-muted small" style="height: 60px; border-bottom: 1px solid #f1f3f5">
+                        <div class="d-flex align-items-start justify-content-end pe-2 text-muted small" style="border-bottom: 1px solid #f1f3f5" [style.height.px]="hourHeight">
                             {{ (h < 10 ? '0' + h : h) }}:00
                         </div>
                     }
@@ -70,21 +71,21 @@
 
                     <!-- hour grid background -->
                     @for (h of hours; track h) {
-                        <div style="height: 60px; border-bottom: 1px solid #f1f3f5"></div>
+                        <div style="border-bottom: 1px solid #f1f3f5" [style.height.px]="hourHeight"></div>
                     }
 
                     <!-- red line to indicate current time, only shows if the week displayed contains today's date -->
                     @if (isSameLocalDate(day.date, now)) {
-                        <div style="position: absolute; left: 0; right: 0; height: 2px; background: red; z-index: 4;" [style.top.px]="nowMinutes"></div>
+                        <div style="position: absolute; left: 0; right: 0; height: 2px; background: red; z-index: 4;" [style.top.px]="nowPosition"></div>
                     }
 
                     <!-- events -->
-                    @for (ev of day.events; track ev._id) {
-                        <div class="rounded shadow-sm border px-2 py-1" style="position: absolute; left: 6px; right: 6px; background: #9dc1f4; overflow: hidden;" [style.top.px]="eventTop(ev)" [style.height.px]="eventHeight(ev)">
-                            <div class="fw-semibold small text-truncate">{{ ev.title }}</div>
+                    @for (event of day.events; track event._id) {
+                        <div class="rounded shadow-sm border px-2 py-1" style="position: absolute; background: #9dc1f4; overflow: hidden;" [style.top.px]="eventTop(event)" [style.height.px]="eventHeight(event)" [style.left.%]="eventLeftPercent(event)" [style.width.%]="eventWidthPercent(event)">
+                            <div class="fw-semibold small text-truncate">{{ event.title }}</div>
 
                             <div class="text-muted" style="font-size: 12px">
-                                {{ ev.start | date:'HH:mm' }} – {{ ev.end | date:'HH:mm' }}
+                                {{ event.start | date:'HH:mm' }} – {{ event.end | date:'HH:mm' }}
                             </div>
                         </div>
                     }
@@ -92,6 +93,12 @@
                 }
             </div>
         </div>
+    </div>
+
+    <br>
+
+    <div class="d-flex justify-content-end">
+        <button class="btn btn-light rounded-pill btn-outline-secondary" type="button" (click)="createEventClick()">Add Event+</button>
     </div>
   }
 </div>

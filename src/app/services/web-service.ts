@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -17,5 +17,9 @@ export class WebService {
         to: to.toISOString()
       }
     });
+  }
+
+  createEvent(event: any) {
+    return this.http.post<any>(`${this.baseUrl}/createEvent`, event);
   }
 }
