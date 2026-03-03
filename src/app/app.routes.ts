@@ -34,6 +34,11 @@ export const routes: Routes = [
                 path: 'calendar/editEvent/:id',
                 loadComponent: () =>
                     import('./components/edit-event/edit-event').then(m => m.EditEvent)
+            },
+            {
+                path: 'calendar/editWorkoutLog/:id',
+                loadComponent: () => 
+                    import('./components/edit-workout-log/edit-workout-log').then(m => m.EditWorkoutLog)
             }
             //rest of components go here
         ]

@@ -20,6 +20,12 @@
                         >
                     </button>
                 </div>
+
+                <div class="d-flex align-items-center justify-content-center gap-3">
+                    <button class="btn btn-outline-secondary" type="button" (click)="today()" [disabled]="loading">
+                        <b>Today</b>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -78,6 +84,14 @@
                     }
 
                     <br>
+
+                    @if (selectedEvent.workoutLogId) {
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-sm w-100" style="outline: 3px solid #001f3f;" type="button" (click)="viewWorkoutLog()"><b>View Workout Log</b></button>
+                        </div>
+
+                        <br>
+                    }
 
                     <div class="d-flex justify-content-between">
                         <button class="btn btn-sm w-25" style="background-color: #001f3f; color: rgb(255, 255, 255);" type="button" (click)="editEventClick()"><b>Edit</b></button>

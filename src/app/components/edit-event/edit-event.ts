@@ -144,7 +144,6 @@ export class EditEvent {
       end,
       description: this.checkOptional(values.description),
       location: this.checkOptional(values.location),
-      workoutLogId: null //TEMPORARY FORCE OF NULL, WILL BE RETRIEVED FROM createWorkout ENDPOINT WHEN MADE AND IF EVENT IS TYPE WORKOUT
     }
 
     this.webService.editEvent(this.route.snapshot.paramMap.get('id'), payload).subscribe({

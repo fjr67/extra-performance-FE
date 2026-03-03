@@ -31,7 +31,7 @@ type WeekDay = {
 @Component({
   selector: 'app-calendar',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   providers: [WebService],
   templateUrl: './calendar.html',
   styleUrl: './calendar.css',
@@ -375,5 +375,13 @@ export class Calendar implements OnInit, OnDestroy{
 
   editEventClick(){
     this.router.navigate([`/calendar/editEvent/${this.selectedEvent?._id}`]);
+  }
+
+  today(){
+    this.loadWeek(new Date());
+  }
+
+  viewWorkoutLog() {
+    this.router.navigate([`/calendar/editWorkoutLog/${this.selectedEvent?.workoutLogId}`])
   }
 }

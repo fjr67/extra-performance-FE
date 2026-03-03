@@ -10,6 +10,8 @@ export class WebService {
 
   private baseUrl = environment.apiUrl;
 
+  pageSize = 8;
+
   getEvents(from: Date, to: Date){
     return this.http.get<any[]>(`${this.baseUrl}/userEvents`, {
       params: {
@@ -33,5 +35,21 @@ export class WebService {
 
   getOneEvent(id: any){
     return this.http.get<any>(`${this.baseUrl}/userEvents/${id}`);
+  }
+
+  getExercises(pn: any, primaryMuscle: string, search: string, excludeIds: any){
+    return this.http.get<any>(`${this.baseUrl}/exercises?ps=${this.pageSize}&pn=${pn}&search=${search}&primaryMuscle=${primaryMuscle}&excludeIds=${excludeIds}`)
+  }
+
+  getWorkoutLog(id: any){
+    return this.http.get<any>(`${this.baseUrl}/workouts/${id}`)
+  }
+
+  getPrimaryMuscles() {
+    return this.http.get<any>(`${this.baseUrl}/exercises/primaryMuscles`)
+  }
+
+  editWorkoutLog(id: any, workoutLog: any){
+    return this.http.patch<any>(`${this.baseUrl}/editWorkout/${id}`, workoutLog);
   }
 }
