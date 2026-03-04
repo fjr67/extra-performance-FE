@@ -64,4 +64,20 @@ export class WebService {
   getUserWorkoutLogs(){
     return this.http.get<any>(`${this.baseUrl}/userWorkouts`)
   }
+
+  getGoals(){
+    return this.http.get<any>(`${this.baseUrl}/goals`)
+  }
+
+  createGoal(goal: any){
+    return this.http.post<any>(`${this.baseUrl}/createGoal`, goal)
+  }
+
+  getTotalWorkoutsProgress(){
+    return this.http.get<any>(`${this.baseUrl}/workoutsProgress`)
+  }
+
+  getTotalWeightProgress(){
+    return this.http.get<any>(`${this.baseUrl}/weightProgress`)
+  }
 }

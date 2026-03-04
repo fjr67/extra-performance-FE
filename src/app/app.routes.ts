@@ -31,6 +31,11 @@ export const routes: Routes = [
                     import('./components/workout-dashboard/workout-dashboard').then(m => m.WorkoutDashboard)
             },
             {
+                path:'goals',
+                loadComponent: () =>
+                    import('./components/goals/goals').then(m => m.Goals)
+            },
+            {
                 path: 'calendar',
                 loadComponent: () =>
                     import('./components/calendar/calendar').then(m => m.Calendar)

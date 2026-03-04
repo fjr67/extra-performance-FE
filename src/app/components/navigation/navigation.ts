@@ -28,6 +28,10 @@ export class Navigation {
   }
 
   workouts(){
-    this.router.navigate(['/workouts'])
+    this.router.navigate(['/workouts']);
+  }
+
+  goals(){
+    this.router.navigate(['/goals']);
   }
 }
