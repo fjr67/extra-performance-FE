@@ -61,7 +61,7 @@ export class Register implements OnInit {
 
     this.auth.register(user).subscribe({
       next: () => this.auth.login(username!, password!).subscribe({
-        next: () => this.router.navigate(['/calendar']),
+        next: () => this.router.navigate(['/dashboard']),
         error: () => (this.error = 'User registered but login failed')
       }),
       error: (err) => (this.error = err?.error.error ?? 'Registration failed')

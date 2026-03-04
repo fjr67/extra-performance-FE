@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { WebService } from '../../services/web-service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { title } from 'process';
 
 type ExerciseResponse = {
   exercises: any[],
@@ -42,6 +43,7 @@ export class EditWorkoutLog {
 
   constructor(protected webService: WebService, private router: Router, private route: ActivatedRoute, private formBuilder: FormBuilder) {
     this.workoutForm = this.formBuilder.group({
+      title: ['', [Validators.required, Validators.maxLength(50)]],
       notes: ['', [Validators.maxLength(2000)]],
       exercises: this.formBuilder.array([])
     });
@@ -216,16 +218,24 @@ export class EditWorkoutLog {
   buildPayload() {
     const raw = this.workoutForm.getRawValue();
 
-    return {
-      notes: this.checkOptional(raw.notes),
-      exercises: (raw.exercises ?? []).map((exercise: any) => ({
+    const payload: any = {
+      title: raw.title?.trim(),
+      notes: this.checkOptional(raw.notes)
+    };
+
+    const exercises = (raw.exercises ?? []).map((exercise: any) => ({
         exerciseId: exercise.exerciseId,
         sets: (exercise.sets ?? []).map((set: any) => ({
           reps: Number(set.reps),
           weight: Number(set.weight)
         })),
-      })),
-    };
+      }));
+
+      if (exercises.length) {
+        payload.exercises = exercises;
+      }
+
+    return payload;
   }
 
   onSubmitWorkout() {
@@ -246,6 +256,15 @@ export class EditWorkoutLog {
     });
   }
 
+  deleteWorkout(){
+    const workoutId = this.route.snapshot.paramMap.get('id');
+
+    this.webService.deleteWorkoutLog(workoutId).subscribe({
+      next: () => this.router.navigate(['/calendar']),
+      error: (err) => console.error(err)
+    });
+  }
+
   ngOnInit(){
 
     const workoutId = this.route.snapshot.paramMap.get('id');
@@ -254,6 +273,7 @@ export class EditWorkoutLog {
       this.workout_log = response;
 
       this.workoutForm.patchValue({
+        title: this.workout_log?.title ?? '',
         notes: this.workout_log?.notes ?? ''
       });
 

@@ -1,0 +1,56 @@
+<div class="container" style="margin-top: 100px; margin-bottom: 70px;">
+    <div class="d-flex justify-content-center">
+        <div class="text-white rounded-4 p-4 p-md-5 w-75" style="max-width: 1200px; background-color: #001f3f;">
+            <h1 class="text-center"><b>Dashboard</b></h1>
+
+            <hr>
+
+            <div>
+                <h4><b>Upcoming Events</b></h4>
+
+                <br>
+
+                @if (events_list.length) {   
+                    <div class="row g-3">
+                        @for (event of events_list; track event?._id) {
+                            <div class="col-12">
+                                <div class="card rounded-4" style="background-color: #c0daff;">
+                                    <div class=card-body>
+                                        <div style="font-size: larger;">
+                                            <b>{{ event.title }}</b>
+                                            @if (event.location) {
+                                                @{{ event.location }}
+                                            }
+                                        </div>
+
+                                        <hr>
+
+                                        <div class="fw-semibold">
+                                            {{ event.start | date:'EE dd/MM/yyyy' }}
+                                        </div>
+
+                                        <div>
+                                            {{ event.start | date:'HH:mm' }} - {{ event.end | date:'HH:mm' }}
+                                        </div>
+
+                                        @if (event.description) {
+                                            <hr>
+
+                                            <div>
+                                                {{ event.description }}
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                } @else {
+                    <div style="font-size: larger;">
+                        No events to display.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

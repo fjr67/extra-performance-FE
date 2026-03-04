@@ -21,6 +21,16 @@ export const routes: Routes = [
             import('./components/layout/layout').then(m => m.Layout),
         children: [
             {
+                path: 'dashboard',
+                loadComponent: () =>
+                    import('./components/dashboard/dashboard').then(m => m.Dashboard)
+            },
+            {
+                path:'workouts',
+                loadComponent: () =>
+                    import('./components/workout-dashboard/workout-dashboard').then(m => m.WorkoutDashboard)
+            },
+            {
                 path: 'calendar',
                 loadComponent: () =>
                     import('./components/calendar/calendar').then(m => m.Calendar)

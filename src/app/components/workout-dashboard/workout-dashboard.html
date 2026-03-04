@@ -1,0 +1,35 @@
+<div class="container" style="margin-top: 100px; margin-bottom: 70px;">
+    <div class="d-flex justify-content-center">
+        <div class="text-white rounded-4 p-4 p-md-5 w-75" style="max-width: 1200px; background-color: #001f3f;">
+            <h1 class="text-center"><b>Workout Logs</b></h1>
+
+            <hr>
+
+            @if (workouts_list.length) {
+                <div class="row g-3">
+                    @for (workout of workouts_list; track workout?._id) {
+                        <div class="col-12">
+                                <div class="card rounded-4 overflow-hidden" style="cursor: pointer; background-color: #c0daff;" [routerLink]="[`/calendar/editWorkoutLog/${workout._id}`]">
+                                    <div class=card-body>
+                                        <div style="font-size: larger;">
+                                            <b>{{ workout.title }}</b>
+                                        </div>
+
+                                        <div class="small">
+                                            {{ workout.date | date:'EE dd/MM/yyyy' }}
+                                        </div>
+
+                                        <hr>
+
+                                        <div class="mt-1">
+                                            {{ getExercisesPreview(workout) }}
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>

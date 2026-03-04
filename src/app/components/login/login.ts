@@ -35,7 +35,7 @@ export class Login implements OnInit {
     this.error = '';
 
     this.auth.login(username!, password!).subscribe({
-      next: () => this.router.navigate(['calendar']),
+      next: () => this.router.navigate(['/dashboard']),
       error: () => (this.error = 'Invalid username or password')
     });
   }

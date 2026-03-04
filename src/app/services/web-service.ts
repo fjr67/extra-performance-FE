@@ -52,4 +52,16 @@ export class WebService {
   editWorkoutLog(id: any, workoutLog: any){
     return this.http.patch<any>(`${this.baseUrl}/editWorkout/${id}`, workoutLog);
   }
+
+  deleteWorkoutLog(id: any){
+    return this.http.delete<any>(`${this.baseUrl}/deleteWorkout/${id}`)
+  }
+
+  getEventsForDashboard(after: any){
+    return this.http.get<any>(`${this.baseUrl}/userEventsLimit?after=${after}`)
+  }
+
+  getUserWorkoutLogs(){
+    return this.http.get<any>(`${this.baseUrl}/userWorkouts`)
+  }
 }

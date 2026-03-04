@@ -1,6 +1,11 @@
 <div class="navbar navbar-expand-sm navbar-dark fixed-top custom-navbar">
     <div class="container">
         <span class="navbar-brand">ExtraPerformance</span>
+        <div class="d-flex gap-3">
+            <button class="btn btn-outline-light rounded-pill px-4" (click)="dashboard()">Dashboard</button>
+            <button class="btn btn-outline-light rounded-pill px-4" (click)="calendar()">Calendar</button>
+            <button class="btn btn-outline-light rounded-pill px-4" (click)="workouts()">Workout Logs</button>
+        </div>
         <div class="form-inline ms-auto" style="margin-right: 10px">
             <button class="btn btn-light rounded-pill px-4" (click)="logout()">Logout</button>
         </div>

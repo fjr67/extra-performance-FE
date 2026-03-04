@@ -18,4 +18,16 @@ export class Navigation {
       this.router.navigate(['/']);
     })
   }
+
+  dashboard(){
+    this.router.navigate(['/dashboard']);
+  }
+
+  calendar(){
+    this.router.navigate(['/calendar']);
+  }
+
+  workouts(){
+    this.router.navigate(['/workouts'])
+  }
 }
