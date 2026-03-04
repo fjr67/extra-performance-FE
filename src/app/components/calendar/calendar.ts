@@ -85,6 +85,10 @@ export class Calendar implements OnInit, OnDestroy{
 
   detailsStyle: { top: number; left: number } | null = null;
 
+  calendarView: 'week' | 'day' = 'week';
+
+  selectedDate: Date = new Date();
+
   // used to show loading screen until events have been retrieved
   loading = false;
 
@@ -98,7 +102,7 @@ export class Calendar implements OnInit, OnDestroy{
     this.startNowTimer();
 
     // retrieves events from db in current week
-    this.loadWeek(new Date());
+    this.loadEvents(new Date());
   }
 
   ngOnDestroy() {
@@ -121,19 +125,30 @@ export class Calendar implements OnInit, OnDestroy{
     this.nowPosition = (minutesFromStart / 60) * this.hourHeight;
   }
 
-  loadWeek(date: Date) {
+  loadEvents(date: Date) {
+    this.selectedEvent = null;
+    this.detailsStyle = null;
+    
     // clear any previous errors
     this.error = '';
 
     // used to show loading screen until events are returned
     this.loading = true;
 
-    // sets first and last day of week
-    this.weekStart = this.getWeekStart(date);
-    this.weekEnd = new Date(this.weekStart);
-    this.weekEnd.setDate(this.weekStart.getDate()+7);
+    this.selectedDate = new Date(date);
+    this.selectedDate.setHours(0,0,0,0);
 
-    // calls API to retrieve week events with first and last day of week as date range parameters + sets loading to be false so loading screen is hidden and calendar view appears
+    if (this.calendarView === 'week') {
+      // sets first and last day of week
+      this.weekStart = this.getWeekStart(this.selectedDate);
+      this.weekEnd = new Date(this.weekStart);
+      this.weekEnd.setDate(this.weekStart.getDate()+7);
+    } else {
+      this.weekStart = new Date(this.selectedDate);
+      this.weekEnd = new Date(this.weekStart);
+      this.weekEnd.setDate(this.weekStart.getDate()+1);
+    }
+
     this.webService.getEvents(this.weekStart, this.weekEnd)
     .pipe(finalize(() => (this.loading = false)))
     .subscribe({
@@ -150,16 +165,18 @@ export class Calendar implements OnInit, OnDestroy{
           workoutLogId: e.workoutLogId ?? null
         }));
 
+        const dayCount = this.calendarView === 'week' ? 7 : 1;
         // gets list of days of the week with each day's events
-        this.weekDays = this.buildWeekDays(this.weekStart, events);
+        this.weekDays = this.buildDays(this.weekStart, dayCount, events);
 
         // only auto scrolls to current time if the week displayed contains today's date, otherwise scrolls to top
-        if (this.weekContainsToday()){
+        const containsToday = this.calendarView === 'week' ? this.weekContainsToday() : this.isSameLocalDate(this.selectedDate, new Date());
+
+        if (containsToday){
           setTimeout(() => this.scrollToNow(), 0);
         } else {
           setTimeout(() => this.calendarScroll?.nativeElement.scrollTo({ top: 0 }), 0);
         }
-        this.loading = false;
       },
       error: (err) => {
         this.error = err?.error?.error ?? 'Failed to load events';
@@ -168,18 +185,22 @@ export class Calendar implements OnInit, OnDestroy{
     });
   }
 
-  // allows navigation to previous weeks
-  prevWeek() {
-    const prevWeek = new Date(this.weekStart);
-    prevWeek.setDate(prevWeek.getDate()-7);
-    this.loadWeek(prevWeek);
+  prev(){
+    const today = new Date(this.selectedDate);
+    today.setDate(today.getDate() - (this.calendarView === 'week' ? 7 : 1));
+    this.loadEvents(today);
   }
 
-  // allows navigation to future weeks
-  nextWeek() {
-    const nextWeek = new Date(this.weekStart);
-    nextWeek.setDate(nextWeek.getDate()+7);
-    this.loadWeek(nextWeek);
+  next(){
+    const today = new Date(this.selectedDate);
+    today.setDate(today.getDate() + (this.calendarView === 'week' ? 7 : 1));
+    this.loadEvents(today);
+  }
+
+  setCalendarView(view: 'week' | 'day') {
+    if (this.calendarView === view) return;
+    this.calendarView = view;
+    this.loadEvents(this.selectedDate)
   }
 
   // returns the date of the Monday in the week which is passed to the method
@@ -198,16 +219,16 @@ export class Calendar implements OnInit, OnDestroy{
     return start;
   }
 
-  // builds and returns a list of WeekDays with their events
-  buildWeekDays(weekStart: Date, events: CalendarEvent[]): WeekDay[] {
+  buildDays(startDate: Date, dayCount: number, events: CalendarEvent[]): WeekDay[] {
     const days: WeekDay[] = [];
 
-    for (let i = 0; i < 7; i++) {
-      const day = new Date(weekStart);
-      day.setDate(weekStart.getDate() + i);
+    for (let i = 0; i < dayCount; i++) {
+      const day = new Date(startDate);
+      day.setDate(startDate.getDate() + i);
 
       // checks each event in the list to see if it is scheduled for the current day of the loop, if yes, sorts events from earliest to latest
       let dayEvents = events.filter((event) => this.isSameLocalDate(event.start, day)).sort((eventA, eventB) => eventA.start.getTime() - eventB.start.getTime());
+
       dayEvents = this.layoutDayEvents(dayEvents);
 
       days.push({ date: day, events: dayEvents });
@@ -364,7 +385,7 @@ export class Calendar implements OnInit, OnDestroy{
         this.selectedEvent = null;
         this.detailsStyle = null;
 
-        this.loadWeek(this.weekStart);
+        this.loadEvents(this.selectedDate);
       },
       error: (err) => {
         console.error(err);
@@ -378,7 +399,7 @@ export class Calendar implements OnInit, OnDestroy{
   }
 
   today(){
-    this.loadWeek(new Date());
+    this.loadEvents(new Date());
   }
 
   viewWorkoutLog() {

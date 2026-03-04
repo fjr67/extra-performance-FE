@@ -8,15 +8,21 @@
             <div class="text-center">
 
                 <div class="d-flex align-items-center justify-content-center gap-3">
-                    <button class="btn btn-outline-secondary" type="button" (click)="prevWeek()" [disabled]="loading">
+                    <button class="btn btn-outline-secondary" type="button" (click)="prev()" [disabled]="loading">
                         <
                     </button>
 
-                    <span>
-                        <h5>{{ weekStart | date:'dd MMM yyyy' }} - {{ weekEnd | date:'dd MMM yyyy' }}</h5>
-                    </span>
+                    @if (calendarView == 'week'){
+                        <span>
+                            <h5>{{ weekStart | date:'dd MMM yyyy' }} - {{ weekEnd | date:'dd MMM yyyy' }}</h5>
+                        </span>
+                    } @else {
+                        <span>
+                            <h5>{{ selectedDate | date:'EEEE dd MMM yyyy' }}</h5>
+                        </span>
+                    }
 
-                    <button class="btn btn-outline-secondary" type="button" (click)="nextWeek()" [disabled]="loading">
+                    <button class="btn btn-outline-secondary" type="button" (click)="next()" [disabled]="loading">
                         >
                     </button>
                 </div>
@@ -25,6 +31,17 @@
                     <button class="btn btn-outline-secondary" type="button" (click)="today()" [disabled]="loading">
                         <b>Today</b>
                     </button>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-center gap-2 mt-2">
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-outline-secondary" type="button" (click)="setCalendarView('week')" [class.active]="calendarView === 'week'" [disabled]="loading">
+                            Week
+                        </button>
+                        <button class="btn btn-outline-secondary" type="button" (click)="setCalendarView('day')" [class.active]="calendarView === 'day'" [disabled]="loading">
+                            Day
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -45,7 +62,7 @@
     <div class="border rounded overflow-hidden bg-white">
         <!-- '#calendarScroll' is reference used for auto scroll to current time -->
         <div #calendarScroll style="position: relative; max-height: 70vh; overflow-y: auto; overflow-x: hidden">
-            <div class="d-grid bg-light" style="grid-template-columns: 80px repeat(7, 1fr); border-bottom: 1px solid #adadad; position: sticky; top: 0; z-index: 5;">
+            <div class="d-grid bg-light" [style.grid-template-columns]="calendarView === 'week' ? '80px repeat(7, 1fr)' : '80px 1fr'" style="border-bottom: 1px solid #adadad; position: sticky; top: 0; z-index: 5;">
                 <div class="bg-light" style="height: 52px; border-right: 1px solid #adadad"></div>
 
                 @for (day of weekDays; track day.date.toISOString()) {
@@ -101,7 +118,7 @@
             }
 
             <!-- scrollable body -->
-            <div class="d-grid" style="grid-template-columns: 80px repeat(7, 1fr)">
+            <div class="d-grid" [style.grid-template-columns]="calendarView === 'week' ? '80px repeat(7, 1fr)' : '80px 1fr'">
                 <!-- time column -->
                 <div style="border-right: 1px solid #adadad">
                     @for (h of hours; track h) {
